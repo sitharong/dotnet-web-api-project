@@ -7,7 +7,7 @@ public class NoteRepository
     private readonly string CONNECTION_STRING;
     public NoteRepository(IConfiguration con)
     {
-        CONNECTION_STRING = con.GetConnectionString("sqlConnection");
+        CONNECTION_STRING = con.GetConnectionString("DefaultConnection");
     }
     private IDbConnection getConnection()
     {
