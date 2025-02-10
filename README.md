@@ -5,6 +5,7 @@ appsettings.json, config ConnectionStrings.DefaultConnection
 # dotnet ef migrations
 
 dotnet ef migrations add CreateEntityTables
+
 dotnet ef migrations update CreateEntityTables
 
 # sql server 2022
