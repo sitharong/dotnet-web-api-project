@@ -19,14 +19,14 @@ namespace AuthAPI.Controllers
         private readonly string? _jwtAudience;
         private readonly int _JwtExpiry;
 
-        // UserManager<ApplicationUser> userManager,
-        // SignInManager<ApplicationUser> signInManager,
         public UserAuthController(
+        UserManager<ApplicationUser> userManager,
+        SignInManager<ApplicationUser> signInManager,
             IConfiguration configuration)
         {
 
-            // _signInManager = signInManager;
-            // _userManager = userManager;
+            _signInManager = signInManager;
+            _userManager = userManager;
             _jwtKey = configuration["Jwt:Key"];
             _jwtIssuer = configuration["Jwt:Issuer"];
             _jwtAudience = configuration["Jwt:Audience"];

@@ -1,18 +1,26 @@
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 [Route("api/note")]
 [ApiController]
+[Authorize]
 public class NoteController : ControllerBase
 {
     // mix service code in here
-    private readonly NoteRepository noteService;
-    public NoteController(NoteRepository repo)
+    private readonly NoteRepository _noteService;
+
+    private readonly UserService _userService;
+    public NoteController(NoteRepository noteRepo, UserService userService)
     {
-        noteService = repo;
+        _noteService = noteRepo;
+        _userService = userService;
     }
+
     private void setResponseHeader()
     {
-        Response.Headers.Append("Access-Control-Allow-Origin", "*");
+        // Response.Headers.Append("Access-Control-Allow-Origin", "*");
+        // Response.Cookies.Append("Token","");
     }
     private ObjectResult responseError500(string message)
     {
@@ -35,7 +43,8 @@ public class NoteController : ControllerBase
     public async Task<IActionResult> helloWorld()
     {
         System.Diagnostics.Debug.WriteLine("Hello World");
-        return Ok("Hello World");
+        System.Diagnostics.Debug.WriteLine(_userService.GetUserId());
+        return Ok(_userService.GetUserId());
     }
 
     [HttpGet("list")]
@@ -43,7 +52,7 @@ public class NoteController : ControllerBase
     {
         try
         {
-            var notes = await noteService.getNotes();
+            var notes = await _noteService.getNotes();
             setResponseHeader();
             return Ok(notes);
         }
@@ -58,7 +67,7 @@ public class NoteController : ControllerBase
     {
         try
         {
-            var note = await noteService.getNote(id);
+            var note = await _noteService.getNote(id);
             if (note != null)
             {
                 setResponseHeader();
@@ -78,10 +87,10 @@ public class NoteController : ControllerBase
     {
         try
         {
-            if (await noteService.createNote(note))
+            if (await _noteService.createNote(note))
             {
                 setResponseHeader();
-                return Ok(await noteService.getNotes());
+                return Ok(await _noteService.getNotes());
             }
             throw new Exception("Error on creating note");
 
@@ -97,15 +106,15 @@ public class NoteController : ControllerBase
     {
         try
         {
-            if (!await noteService.isNoteExist(note.id))
+            if (!await _noteService.isNoteExist(note.id))
             {
                 return responseNotFound();
 
             }
-            if (await noteService.updateNote(note))
+            if (await _noteService.updateNote(note))
             {
                 setResponseHeader();
-                return Ok(await noteService.getNotes());
+                return Ok(await _noteService.getNotes());
             }
             throw new Exception("Error on updating note");
         }
@@ -120,14 +129,14 @@ public class NoteController : ControllerBase
     {
         try
         {
-            if (!await noteService.isNoteExist(id))
+            if (!await _noteService.isNoteExist(id))
             {
                 return responseNotFound();
             }
-            if (await noteService.deleteNote(id))
+            if (await _noteService.deleteNote(id))
             {
                 setResponseHeader();
-                return Ok(await noteService.getNotes());
+                return Ok(await _noteService.getNotes());
             }
             throw new Exception("Error on deleting note");
         }
